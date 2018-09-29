@@ -1,0 +1,30 @@
+{{- define "base" -}}
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>{{ template "page-title" . }} - Snippetbox</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/static/css/main.css">
+  <link rel="shortcut icon" href="/static/img/favicon.ico">
+</head>
+
+<body>
+  <header>
+    <h1><a href="/">Snippetbox</a></h1>
+  </header>
+
+  <nav>
+    <a href="/">Home</a>
+    <a href="/snippet/new">New snippet</a>
+  </nav>
+
+  <section>
+    {{- template "page-body" . -}}
+  </section>
+</body>
+
+</html>
+{{- end -}}
