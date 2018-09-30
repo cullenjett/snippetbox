@@ -6,11 +6,6 @@ import (
 )
 
 func (app *App) Home(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		app.NotFound(w)
-		return
-	}
-
 	snippets, err := app.Database.LatestSnippets()
 	if err != nil {
 		app.ServerError(w, err)
@@ -23,7 +18,7 @@ func (app *App) Home(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) ShowSnippet(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	id, err := strconv.Atoi(r.URL.Query().Get(":id"))
 	if err != nil || id < 1 {
 		app.NotFound(w)
 		return
@@ -46,4 +41,8 @@ func (app *App) ShowSnippet(w http.ResponseWriter, r *http.Request) {
 
 func (app *App) NewSnippet(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Display the snippet form"))
+}
+
+func (app *App) CreateSnippet(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Create a new snippet"))
 }
