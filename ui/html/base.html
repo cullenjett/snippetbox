@@ -17,8 +17,8 @@
   </header>
 
   <nav>
-    <a href="/">Home</a>
-    <a href="/snippet/new">New snippet</a>
+    <a href="/" {{if eq .Path "/"}} class="live" {{end}}>Home</a>
+    <a href="/snippet/new" {{if eq .Path "/snippet/new"}} class="live" {{end}}>New snippet</a>
   </nav>
 
   <section>

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 )
@@ -12,12 +11,19 @@ func (app *App) Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.RenderHTML(w, "home.page.html")
+	snippets, err := app.Database.LatestSnippets()
+	if err != nil {
+		app.ServerError(w, err)
+		return
+	}
+
+	app.RenderHTML(w, r, "home.page.html", &HTMLData{
+		Snippets: snippets,
+	})
 }
 
 func (app *App) ShowSnippet(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
-
 	if err != nil || id < 1 {
 		app.NotFound(w)
 		return
@@ -33,7 +39,9 @@ func (app *App) ShowSnippet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprint(w, snippet)
+	app.RenderHTML(w, r, "show.page.html", &HTMLData{
+		Snippet: snippet,
+	})
 }
 
 func (app *App) NewSnippet(w http.ResponseWriter, r *http.Request) {

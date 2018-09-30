@@ -1,6 +1,26 @@
-{{- define "page-title" -}}Home{{- end -}}
-
-{{- define "page-body" -}}
-<h2>Latest snippets</h2>
-<p>There's nothing to see here yet</p>
-{{- end -}}
+{{define "page-title"}}Home{{end}}
+{{define "page-body"}}
+<h2>Latest Snippets</h2>
+{{if .Snippets}}
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Created</th>
+      <th>ID</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{range .Snippets}}
+    <tr>
+      <td><a href="/snippet?id={{.ID}}">{{.Title}}</a></td>
+      <td>{{.Created | humanDate}}</td>
+      <td>#{{.ID}}</td>
+    </tr>
+    {{end}}
+  </tbody>
+</table>
+{{else}}
+<p>There's nothing to see here yet!</p>
+{{end}}
+{{end}}
