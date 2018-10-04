@@ -37,7 +37,16 @@ func (app *App) ShowSnippet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	session := app.Sessions.Load(r)
+
+	flash, err := session.PopString(w, "flash")
+	if err != nil {
+		app.ServerError(w, err)
+		return
+	}
+
 	app.RenderHTML(w, r, "show.page.html", &HTMLData{
+		Flash:   flash,
 		Snippet: snippet,
 	})
 }
@@ -69,6 +78,14 @@ func (app *App) CreateSnippet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	id, err := app.Database.InsertSnippet(form.Title, form.Content, form.Expires)
+	if err != nil {
+		app.ServerError(w, err)
+		return
+	}
+
+	session := app.Sessions.Load(r)
+
+	err = session.PutString(w, "flash", "Your snippet was saved successfully!")
 	if err != nil {
 		app.ServerError(w, err)
 		return

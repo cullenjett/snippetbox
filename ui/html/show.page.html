@@ -1,6 +1,10 @@
 {{ define "page-title" }}Snippet #{{ .Snippet.ID }}{{ end }}
 
 {{ define "page-body" }}
+{{with .Flash}}
+<div class="flash">{{.}}</div>
+{{end}}
+
 {{ with .Snippet }}
 <div class="snippet">
   <div class="metadata">

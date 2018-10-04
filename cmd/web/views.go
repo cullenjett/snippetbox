@@ -12,6 +12,7 @@ import (
 
 type HTMLData struct {
 	Form     interface{}
+	Flash    string
 	Path     string
 	Snippet  *models.Snippet
 	Snippets []*models.Snippet
