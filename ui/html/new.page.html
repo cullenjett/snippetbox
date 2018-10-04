@@ -1,0 +1,35 @@
+{{define "page-title"}}Add a New Snippet{{end}}
+
+{{define "page-body"}}
+<form action="/snippet/new" method="POST">
+  {{with .Form}}
+  <div>
+    <label>Title:</label>
+    {{with .Failures.Title}}
+    <label class="error">{{.}}</label>
+    {{end}}
+    <input type="text" name="title" value={{.Title}}>
+  </div>
+  <div>
+    <label>Content:</label>
+    {{with .Failures.Content}}
+    <label class="error">{{.}}</label>
+    {{end}}
+    <textarea name="content">{{.Content}}</textarea>
+  </div>
+  <div>
+    <label>Delete in:</label>
+    {{with .Failures.Expires}}
+    <label class="error">{{.}}</label>
+    {{end}}
+    {{$expires := or .Expires "31536000"}}
+    <input type="radio" name="expires" value="31536000" {{if (eq $expires "31536000")}} checked{{end}}> One Year
+    <input type="radio" name="expires" value="86400" {{if (eq $expires "86400")}} checked{{end}}> One Day
+    <input type="radio" name="expires" value="3600" {{if (eq $expires "3600")}} checked{{end}}> One Hour
+  </div>
+  <div>
+    <input type="submit" value="Publish snippet">
+  </div>
+  {{end}}
+</form>
+{{end}}
