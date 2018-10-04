@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"flag"
 	"log"
-	"net/http"
 	"time"
 
 	"snippetbox.org/pkg/models"
@@ -19,6 +18,9 @@ func main() {
 	htmlDir := flag.String("html-dir", "./ui/html", "Path to HTML templates")
 	secret := flag.String("secret", "s6Nd%+pPbnzHbS*+9Pk8qGWhTzbpa@ge", "Secret key")
 	staticDir := flag.String("static-dir", "./ui/static", "Path to static assets directory")
+	tlsCert := flag.String("tls-cert", "./tls/cert.pem", "Path to TLS certificate")
+	tlsKey := flag.String("tls-key", "./tls/key.pem", "Path to TLS key")
+
 	flag.Parse()
 
 	db := connect(*dsn)
@@ -29,15 +31,16 @@ func main() {
 	sessionManager.Persist(true)
 
 	app := &App{
+		Addr:      *addr,
 		Database:  &models.Database{db},
 		HTMLDir:   *htmlDir,
 		Sessions:  sessionManager,
 		StaticDir: *staticDir,
+		TLSCert:   *tlsCert,
+		TLSKey:    *tlsKey,
 	}
 
-	log.Printf("Server listening on %s", *addr)
-	err := http.ListenAndServe(*addr, app.Routes())
-	log.Fatal(err)
+	app.RunServer()
 }
 
 func connect(dsn string) *sql.DB {
