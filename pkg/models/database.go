@@ -2,6 +2,15 @@ package models
 
 import (
 	"database/sql"
+	"errors"
+
+	"github.com/go-sql-driver/mysql"
+	"golang.org/x/crypto/bcrypt"
+)
+
+var (
+	ErrDuplicateEmail     = errors.New("models: email address already in use")
+	ErrInvalidCredentials = errors.New("models: invalid user credentials")
 )
 
 type Database struct {
@@ -72,4 +81,45 @@ func (db *Database) InsertSnippet(title, content, expires string) (int, error) {
 	}
 
 	return int(id), nil
+}
+
+func (db *Database) InsertUser(name, email, password string) error {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 12)
+	if err != nil {
+		return err
+	}
+
+	stmt := `INSERT INTO users (name, email, password, created)
+	VALUES(?, ?, ?, UTC_TIMESTAMP())`
+
+	_, err = db.Exec(stmt, name, email, hashedPassword)
+	if err != nil {
+		if err.(*mysql.MySQLError).Number == 1062 {
+			return ErrDuplicateEmail
+		}
+	}
+
+	return err
+}
+
+func (db *Database) VerifyUser(email, password string) (int, error) {
+	var id int
+	var hashedPassword []byte
+
+	row := db.QueryRow("SELECT id, password FROM users WHERE email = ?", email)
+	err := row.Scan(&id, &hashedPassword)
+	if err == sql.ErrNoRows {
+		return 0, ErrInvalidCredentials
+	} else if err != nil {
+		return 0, err
+	}
+
+	err = bcrypt.CompareHashAndPassword(hashedPassword, []byte(password))
+	if err == bcrypt.ErrMismatchedHashAndPassword {
+		return 0, ErrInvalidCredentials
+	} else if err != nil {
+		return 0, err
+	}
+
+	return id, nil
 }

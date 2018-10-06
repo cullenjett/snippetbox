@@ -2,6 +2,8 @@
 
 {{define "page-body"}}
 <form action="/snippet/new" method="POST">
+  <!-- Add a hidden input containing the CSRF token -->
+  <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
   {{with .Form}}
   <div>
     <label>Title:</label>
